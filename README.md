@@ -8,12 +8,9 @@ local Window = OrionLib:MakeWindow({Name = "Kaizen (GoldenScripts Battlegrounds)
 local InfAwaken = false
 local NoCooldown = false
 local FreeEarlyAccess = false
+local AdminPanel = false -- New admin panel toggle
 local JumpPower = 200
 local Speed = 16
-
--- Players list for admin kick
-local players = game:GetService("Players")
-local kickPlayerDropdown -- reference to the dropdown
 
 -- Main tab
 local MainTab = Window:MakeTab({
@@ -82,38 +79,15 @@ MainTab:AddTextbox({
     end    
 })
 
--- Function to update the dropdown with the list of players
-local function updatePlayersDropdown()
-    local playerNames = {}
-    for _, player in pairs(players:GetPlayers()) do
-        table.insert(playerNames, player.Name)
-    end
-
-    -- Update the dropdown options dynamically
-    kickPlayerDropdown:Refresh(playerNames, true)
-end
-
--- Admin Kick dropdown
-kickPlayerDropdown = MainTab:AddDropdown({
-    Name = "Kick Player",
-    Default = "",
-    Options = {}, -- Will be updated dynamically
-    Callback = function(selectedPlayer)
-        local playerToKick = players:FindFirstChild(selectedPlayer)
-        if playerToKick then
-            playerToKick:Kick("YouHaveBeenKickedByGoldenScriptLol")
-        else
-            warn("Player not found.")
-        end
+-- Admin Panel toggle to enable/disable the "Npc Quest" GUI
+MainTab:AddToggle({
+    Name = "Admin Panel",
+    Default = false,
+    Callback = function(value)
+        AdminPanel = value
+        game:GetService("Players").LocalPlayer.PlayerGui["Npc Quest"].Enabled = value
     end
 })
 
--- Update dropdown when a player joins or leaves
-players.PlayerAdded:Connect(updatePlayersDropdown)
-players.PlayerRemoving:Connect(updatePlayersDropdown)
-
 -- Initialize the UI
 OrionLib:Init()
-
--- Call this to populate the dropdown at the start
-updatePlayersDropdown()
